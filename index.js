@@ -1,11 +1,9 @@
 const express = require('express');
 const LineMiddleware = require('@line/bot-sdk').middleware;
+const handleEvent = require('./services/handleEvent');
 
 require('dotenv').config();
-const lineConfig = {
-  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
-  channelSecret: process.env.CHANNEL_SECRET
-};
+const lineConfig = require('./config/lineConfig');
 
 const app = express();
 
@@ -15,7 +13,9 @@ app.get('/', (req, res) => {
 
 app.post('/webhook', LineMiddleware(lineConfig), (req, res) => {
   console.log(req.body);
-  res.json({});
+  Promise
+    .all(req.body.events.map(handleEvent))
+    .then((result) => res.json(result));
 });
 
 app.get('/health', (req, res) => {
