@@ -13,9 +13,7 @@ app.get('/', (req, res) => {
 
 app.post('/webhook', LineMiddleware(lineConfig), (req, res) => {
   console.log(req.body);
-  Promise
-    .all(req.body.events.map(handleEvent))
-    .then((result) => res.json(result));
+  handleEvent(req, res);
 });
 
 app.get('/health', (req, res) => {
